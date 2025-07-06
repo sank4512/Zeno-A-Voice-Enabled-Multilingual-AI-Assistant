@@ -1,0 +1,14 @@
+streamlit
+requests
+wikipedia
+pyttsx3
+pygame
+sounddevice
+scipy
+numpy
+google-generativeai
+gtts
+langdetect
+whisper
+translate
+fpdf
