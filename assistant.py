@@ -10,7 +10,7 @@ from sqlalchemy import create_engine, Column, String
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 # --- Gemini & Whisper init (existing) ---
-genai.configure(api_key="AIzaSyBGzLZFa0NkzSqrC7mymT2Nui5XpdWsnt8")
+genai.configure(api_key=st.secrets["api_keys"]["gemini_api"])
 gemini_model = genai.GenerativeModel("gemini-1.5-flash")
 
 model = whisper.load_model("base")
@@ -205,25 +205,30 @@ if rec:
 from fpdf import FPDF
 
 # PDF Download button
+
+
 if st.button("📄 Download PDF"):
     pdf = FPDF()
     pdf.add_page()
+    pdf.set_font("Arial", size=12)
 
-    # Add Unicode font (DejaVuSans)
-    font_path = os.path.join(os.getcwd(), "DejaVuSans.ttf")
-    pdf.add_font("DejaVu", "", font_path, uni=True)
-    pdf.set_font("DejaVu", size=12)
-
-    # Add chat history
     for ts, role, msg in st.session_state.chat_history:
-        pdf.multi_cell(0, 10, f"{ts} | {role}: {msg}")
+        try:
+            pdf.multi_cell(0, 10, f"{ts} | {role}: {msg}")
+        except Exception as e:
+            pdf.multi_cell(0, 10, f"{ts} | {role}: [Error displaying text]")
 
     pdf_path = os.path.join(tempfile.gettempdir(), "chat.pdf")
-    pdf.output(pdf_path, "F")
+    pdf.output(pdf_path)
+    st.markdown("""
+        <style>
+        div.stDownloadButton > button:first-child {
+            background-color: #28a745;
+            color: white;
+            font-weight: bold;
+        }
+        </style>
+    """, unsafe_allow_html=True)
 
     with open(pdf_path, "rb") as f:
         st.download_button("Download PDF", f, "chat.pdf", "application/pdf")
-
-st.caption("🔊 Powered by Whisper, Gemini, Streamlit | Built with ❤️ by Sanket")
-
-
