@@ -12,3 +12,4 @@ langdetect
 whisper
 translate
 fpdf
+portaudio
